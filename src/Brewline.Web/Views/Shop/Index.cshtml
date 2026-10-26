@@ -11,7 +11,7 @@
             <input type="hidden" name="category" value="@Model.Category" />
         }
         <input type="search" name="q" value="@Model.Search" class="form-control" placeholder="Search products" aria-label="Search products" />
-        <button class="btn btn-outline-dark" type="submit">Search</button>
+        <button class="btn btn-quiet" type="submit">Search</button>
     </form>
 </div>
 
@@ -27,7 +27,7 @@
 {
     <div class="text-center text-muted py-5">
         <p class="h5">Nothing matches that.</p>
-        <a asp-action="Index">Clear filters</a>
+        <a class="btn btn-quiet" asp-action="Index">Clear filters</a>
     </div>
 }
 else

@@ -7,7 +7,8 @@
     <h1 class="h3 mb-0">Products</h1>
     <div class="d-flex gap-2">
         <a class="btn btn-brand" asp-action="Create">Add product</a>
-        <a class="btn btn-outline-dark" asp-controller="AdminOrders" asp-action="Index">Orders</a>
+        <a class="btn btn-quiet" asp-controller="AdminOrders" asp-action="Index">Orders</a>
+        <form asp-controller="AdminAccount" asp-action="Logout" method="post"><button class="btn btn-quiet" type="submit">Log out</button></form>
     </div>
 </div>
 
@@ -25,7 +26,7 @@
                     <td class="text-end">@Pricing.Format(product.PriceCents)</td>
                     <td class="text-end">@if (product.Stock == 0) { <span class="badge text-bg-danger">0</span> } else if (product.Stock <= 5) { <span class="badge text-bg-warning">@product.Stock</span> } else { @product.Stock }</td>
                     <td>@(product.IsActive ? "Yes" : "No")</td>
-                    <td class="text-end"><a class="btn btn-sm btn-outline-dark" asp-action="Edit" asp-route-id="@product.Id">Edit</a></td>
+                    <td class="text-end"><a class="btn btn-sm btn-quiet" asp-action="Edit" asp-route-id="@product.Id">Edit</a></td>
                 </tr>
             }
             </tbody>

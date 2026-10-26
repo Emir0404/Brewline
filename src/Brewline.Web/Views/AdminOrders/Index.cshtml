@@ -7,8 +7,8 @@
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <h1 class="h3 mb-0">Orders</h1>
     <div class="d-flex gap-2">
-        <a class="btn btn-outline-dark" asp-controller="AdminProducts" asp-action="Index">Products</a>
-        <form asp-controller="AdminAccount" asp-action="Logout" method="post"><button class="btn btn-outline-secondary" type="submit">Log out</button></form>
+        <a class="btn btn-quiet" asp-controller="AdminProducts" asp-action="Index">Products</a>
+        <form asp-controller="AdminAccount" asp-action="Logout" method="post"><button class="btn btn-quiet" type="submit">Log out</button></form>
     </div>
 </div>
 
@@ -16,7 +16,7 @@
     <a class="btn btn-sm @(current is null ? "btn-dark" : "btn-outline-dark")" asp-action="Index">All</a>
     @foreach (var status in Enum.GetValues<OrderStatus>())
     {
-        <a class="btn btn-sm @(current == status ? "btn-dark" : "btn-outline-dark")" asp-action="Index" asp-route-status="@status">@status</a>
+        <a class="btn btn-sm @(current == status ? "btn-dark" : "btn-outline-dark")" asp-action="Index" asp-route-status="@status">@OrderStatusDisplay.Label(status)</a>
     }
 </div>
 
@@ -37,7 +37,7 @@
                         <td><a asp-action="Details" asp-route-id="@order.Id">@order.Reference</a></td>
                         <td>@order.CreatedAt.ToString("dd MMM HH:mm")</td>
                         <td>@order.CustomerName <span class="text-muted small">@order.Email</span></td>
-                        <td><span class="badge text-bg-@(order.Status switch { OrderStatus.Paid => "success", OrderStatus.Shipped => "primary", OrderStatus.Pending => "warning", OrderStatus.NeedsReview => "danger", _ => "secondary" })">@order.Status</span></td>
+                        <td><span class="badge text-bg-@OrderStatusDisplay.Badge(order.Status)">@OrderStatusDisplay.Label(order.Status)</span></td>
                         <td class="text-end">@Pricing.Format(order.TotalCents, order.Currency)</td>
                     </tr>
                 }

@@ -44,14 +44,14 @@ else
                                         <input type="hidden" name="productId" value="@line.ProductId" />
                                         <input type="number" name="quantity" value="@line.Quantity" min="1" max="@Pricing.MaxQuantityPerLine"
                                                class="form-control form-control-sm" style="width: 4.5rem" aria-label="Quantity of @line.Name" />
-                                        <button class="btn btn-sm btn-outline-dark" type="submit">Update</button>
+                                        <button class="btn btn-sm btn-quiet" type="submit">Update</button>
                                     </form>
                                 </div>
                                 <div class="col-5 col-md-2 text-end">
                                     <div class="fw-medium">@Pricing.Format(line.LineTotalCents)</div>
                                     <form asp-action="Remove" method="post">
                                         <input type="hidden" name="productId" value="@line.ProductId" />
-                                        <button class="btn btn-link btn-sm text-danger p-0" type="submit">Remove</button>
+                                        <button class="btn btn-sm btn-quiet-danger mt-1" type="submit">Remove</button>
                                     </form>
                                 </div>
                             </div>
@@ -84,6 +84,7 @@ else
                     {
                         <a class="btn btn-brand w-100 mt-3" asp-controller="Checkout" asp-action="Index">Checkout</a>
                     }
+                    <a class="btn btn-quiet w-100 mt-2" asp-controller="Shop" asp-action="Index">Continue shopping</a>
                 </div>
             </div>
         </div>

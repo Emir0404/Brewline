@@ -6,7 +6,7 @@
 <div class="mx-auto" style="max-width: 32rem">
     <div class="alert alert-warning small">
         <strong>Demo payment page.</strong> This stands in for Stripe's payment page so you can try the shop without an account.
-        No card is needed and no money moves. With <code>Payments:Provider = Stripe</code> customers pay on Stripe instead.
+        No card is needed and no money moves. In the live shop, customers pay on Stripe's secure page instead.
     </div>
 
     <div class="card">
@@ -23,9 +23,7 @@
             <form asp-action="Pay" asp-route-token="@Model.Token" method="post" class="mb-2">
                 <button type="submit" class="btn btn-brand btn-lg w-100">Pay @Pricing.Format(Model.TotalCents, Model.Currency) (simulated)</button>
             </form>
-            <form asp-action="Cancel" asp-route-token="@Model.Token" method="post">
-                <button type="submit" class="btn btn-link w-100">Go back without paying</button>
-            </form>
+            <a class="btn btn-quiet w-100" href="/orders/@Model.Token">Back to my order</a>
         </div>
     </div>
 </div>

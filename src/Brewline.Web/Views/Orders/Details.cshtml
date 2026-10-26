@@ -3,14 +3,8 @@
     var confirming = (bool)ViewBag.Confirming;
     var waiting = Model.Status == OrderStatus.Pending && confirming;
     ViewData["Title"] = $"Order {Model.Reference}";
-    var (badge, label) = Model.Status switch
-    {
-        OrderStatus.Pending => ("warning", "Waiting for payment"),
-        OrderStatus.Paid => ("success", "Paid"),
-        OrderStatus.Shipped => ("primary", "Shipped"),
-        OrderStatus.Cancelled => ("secondary", "Cancelled"),
-        _ => ("danger", "Being reviewed"),
-    };
+    var badge = OrderStatusDisplay.Badge(Model.Status);
+    var label = OrderStatusDisplay.Label(Model.Status);
 }
 
 @if (waiting)
@@ -24,6 +18,7 @@
         <h1 class="h3 mb-1">Order @Model.Reference <span class="badge text-bg-@badge fs-6 align-middle">@label</span></h1>
         <div class="text-muted small">Placed @Model.CreatedAt.ToString("dd MMM yyyy HH:mm") UTC</div>
     </div>
+    <a class="btn btn-quiet" asp-controller="Shop" asp-action="Index">Continue shopping</a>
 </div>
 
 @if (waiting)
@@ -48,7 +43,7 @@ else if (Model.Status == OrderStatus.Pending)
         <p class="mb-2">Your payment is not finished yet. Your items are reserved for a short time.</p>
         <div class="d-flex gap-2">
             <form asp-action="Retry" asp-route-token="@Model.Token" method="post"><button class="btn btn-brand" type="submit">Pay now</button></form>
-            <form asp-action="Cancel" asp-route-token="@Model.Token" method="post" data-confirm="Cancel this order?"><button class="btn btn-outline-secondary" type="submit">Cancel order</button></form>
+            <form asp-action="Cancel" asp-route-token="@Model.Token" method="post" data-confirm="Cancel this order?"><button class="btn btn-quiet" type="submit">Cancel order</button></form>
         </div>
     </div>
 }
