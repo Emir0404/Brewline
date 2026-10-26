@@ -1,0 +1,91 @@
+@model CartView
+@{
+    ViewData["Title"] = "Your basket";
+    var price = Model.Price;
+    var toFree = Pricing.AwayFromFreeShipping(Model.SubtotalCents);
+}
+
+<h1 class="h3 mb-4">Your basket</h1>
+
+@if (Model.IsEmpty)
+{
+    <div class="text-center py-5">
+        <p class="h5 text-muted">Your basket is empty.</p>
+        <a class="btn btn-brand" asp-controller="Shop" asp-action="Index">Start shopping</a>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <ul class="list-group list-group-flush">
+                    @foreach (var line in Model.Lines)
+                    {
+                        <li class="list-group-item py-3">
+                            <div class="row align-items-center g-3">
+                                <div class="col-3 col-md-2">
+                                    <img src="/images/products/@(line.Slug).svg" alt="" class="img-fluid rounded-3" />
+                                </div>
+                                <div class="col-9 col-md-5">
+                                    <a class="fw-medium text-decoration-none" asp-controller="Shop" asp-action="Details" asp-route-slug="@line.Slug">@line.Name</a>
+                                    <div class="small text-muted">@Pricing.Format(line.UnitPriceCents) each</div>
+                                    @if (!line.Available)
+                                    {
+                                        <div class="small text-danger">No longer available, please remove it.</div>
+                                    }
+                                    else if (line.Quantity > line.Stock)
+                                    {
+                                        <div class="small text-danger">Only @line.Stock left, please reduce the quantity.</div>
+                                    }
+                                </div>
+                                <div class="col-7 col-md-3">
+                                    <form asp-action="Update" method="post" class="d-flex gap-1">
+                                        <input type="hidden" name="productId" value="@line.ProductId" />
+                                        <input type="number" name="quantity" value="@line.Quantity" min="1" max="@Pricing.MaxQuantityPerLine"
+                                               class="form-control form-control-sm" style="width: 4.5rem" aria-label="Quantity of @line.Name" />
+                                        <button class="btn btn-sm btn-outline-dark" type="submit">Update</button>
+                                    </form>
+                                </div>
+                                <div class="col-5 col-md-2 text-end">
+                                    <div class="fw-medium">@Pricing.Format(line.LineTotalCents)</div>
+                                    <form asp-action="Remove" method="post">
+                                        <input type="hidden" name="productId" value="@line.ProductId" />
+                                        <button class="btn btn-link btn-sm text-danger p-0" type="submit">Remove</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Summary</h2>
+                    <div class="d-flex justify-content-between"><span>Subtotal</span><span>@Pricing.Format(price.SubtotalCents)</span></div>
+                    <div class="d-flex justify-content-between"><span>Shipping</span><span>@(price.ShippingCents == 0 ? "Free" : Pricing.Format(price.ShippingCents))</span></div>
+                    <hr />
+                    <div class="d-flex justify-content-between fw-bold fs-5"><span>Total</span><span>@Pricing.Format(price.TotalCents)</span></div>
+                    <div class="small text-muted">VAT included</div>
+
+                    @if (toFree > 0)
+                    {
+                        <div class="alert alert-light border small mt-3 mb-0">Add @Pricing.Format(toFree) more for free shipping.</div>
+                    }
+
+                    @if (Model.HasProblems)
+                    {
+                        <button class="btn btn-brand w-100 mt-3" disabled>Fix the items above to continue</button>
+                    }
+                    else
+                    {
+                        <a class="btn btn-brand w-100 mt-3" asp-controller="Checkout" asp-action="Index">Checkout</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}

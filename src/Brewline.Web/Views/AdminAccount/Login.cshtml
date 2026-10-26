@@ -1,0 +1,22 @@
+@model LoginForm
+@{
+    ViewData["Title"] = "Admin login";
+}
+
+<div class="mx-auto" style="max-width: 24rem">
+    <h1 class="h3 mb-3">Admin login</h1>
+    <div class="card"><div class="card-body">
+        <form asp-action="Login" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <div class="mb-3">
+                <label asp-for="Username" class="form-label"></label>
+                <input asp-for="Username" class="form-control" autocomplete="username" autofocus />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" autocomplete="current-password" />
+            </div>
+            <button class="btn btn-brand w-100" type="submit">Log in</button>
+        </form>
+    </div></div>
+</div>

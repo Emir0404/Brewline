@@ -1,0 +1,37 @@
+@model Product
+
+<div class="card product-card h-100">
+    <a asp-controller="Shop" asp-action="Details" asp-route-slug="@Model.Slug">
+        <img src="/images/products/@(Model.Slug).svg" class="card-img-top" alt="@Model.Name" loading="lazy" />
+    </a>
+    <div class="card-body d-flex flex-column">
+        <div class="small text-muted mb-1">@Model.Category@(Model.Size is null ? "" : " · " + Model.Size)</div>
+        <h2 class="h6 mb-1"><a class="stretched-link-off text-decoration-none" asp-controller="Shop" asp-action="Details" asp-route-slug="@Model.Slug">@Model.Name</a></h2>
+        <p class="small text-muted flex-grow-1">@Model.Summary</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <span class="price">@Pricing.Format(Model.PriceCents)</span>
+            @if (Model.Stock == 0)
+            {
+                <span class="badge text-bg-secondary">Sold out</span>
+            }
+            else if (Model.Stock <= 5)
+            {
+                <span class="badge text-bg-warning">Only @Model.Stock left</span>
+            }
+        </div>
+    </div>
+    <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+        @if (Model.Stock > 0)
+        {
+            <form asp-controller="Cart" asp-action="Add" method="post">
+                <input type="hidden" name="productId" value="@Model.Id" />
+                <input type="hidden" name="returnTo" value="@(Context.Request.Path + Context.Request.QueryString)" />
+                <button type="submit" class="btn btn-brand w-100">Add to basket</button>
+            </form>
+        }
+        else
+        {
+            <button type="button" class="btn btn-outline-secondary w-100" disabled>Sold out</button>
+        }
+    </div>
+</div>

@@ -1,0 +1,34 @@
+@model IReadOnlyList<Product>
+@{
+    ViewData["Title"] = "Products";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 mb-0">Products</h1>
+    <div class="d-flex gap-2">
+        <a class="btn btn-brand" asp-action="Create">Add product</a>
+        <a class="btn btn-outline-dark" asp-controller="AdminOrders" asp-action="Index">Orders</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead><tr><th></th><th>Name</th><th>Category</th><th class="text-end">Price</th><th class="text-end">Stock</th><th>Visible</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var product in Model)
+            {
+                <tr class="@(product.IsActive ? "" : "text-muted")">
+                    <td style="width: 56px"><img src="/images/products/@(product.Slug).svg" alt="" width="44" height="44" class="rounded-2" /></td>
+                    <td class="fw-medium">@product.Name</td>
+                    <td>@product.Category</td>
+                    <td class="text-end">@Pricing.Format(product.PriceCents)</td>
+                    <td class="text-end">@if (product.Stock == 0) { <span class="badge text-bg-danger">0</span> } else if (product.Stock <= 5) { <span class="badge text-bg-warning">@product.Stock</span> } else { @product.Stock }</td>
+                    <td>@(product.IsActive ? "Yes" : "No")</td>
+                    <td class="text-end"><a class="btn btn-sm btn-outline-dark" asp-action="Edit" asp-route-id="@product.Id">Edit</a></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

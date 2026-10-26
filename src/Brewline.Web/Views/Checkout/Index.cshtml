@@ -1,0 +1,85 @@
+@model CheckoutForm
+@{
+    ViewData["Title"] = "Checkout";
+    var cart = (CartView)ViewBag.Cart;
+    var price = cart.Price;
+}
+
+<h1 class="h3 mb-4">Checkout</h1>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <form asp-action="Place" method="post" novalidate>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="card mb-3">
+                <div class="card-header">Delivery details</div>
+                <div class="card-body row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="CustomerName" class="form-label"></label>
+                        <input asp-for="CustomerName" class="form-control" autocomplete="name" />
+                        <span asp-validation-for="CustomerName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" type="email" class="form-control" autocomplete="email" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="AddressLine" class="form-label"></label>
+                        <input asp-for="AddressLine" class="form-control" autocomplete="street-address" />
+                        <span asp-validation-for="AddressLine" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-5">
+                        <label asp-for="City" class="form-label"></label>
+                        <input asp-for="City" class="form-control" autocomplete="address-level2" />
+                        <span asp-validation-for="City" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="PostalCode" class="form-label"></label>
+                        <input asp-for="PostalCode" class="form-control" autocomplete="postal-code" />
+                        <span asp-validation-for="PostalCode" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Country" class="form-label"></label>
+                        <select asp-for="Country" class="form-select" asp-items="@(Countries.All.Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(c, c)))"></select>
+                        <span asp-validation-for="Country" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Note" class="form-label"></label>
+                        <textarea asp-for="Note" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="Note" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-brand btn-lg w-100">
+                @(PaymentSettings.Value.IsDemo ? "Continue to demo payment" : "Continue to secure payment") · @Pricing.Format(price.TotalCents)
+            </button>
+            <p class="small text-muted mt-2 mb-0">
+                @(PaymentSettings.Value.IsDemo
+                    ? "This is a demo shop: the next page simulates the payment, no card is needed."
+                    : "You will pay on Stripe's secure page. We never see or store your card details.")
+            </p>
+        </form>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header">Your order</div>
+            <ul class="list-group list-group-flush">
+                @foreach (var line in cart.Lines)
+                {
+                    <li class="list-group-item d-flex justify-content-between gap-2">
+                        <span>@line.Quantity × @line.Name</span>
+                        <span>@Pricing.Format(line.LineTotalCents)</span>
+                    </li>
+                }
+                <li class="list-group-item d-flex justify-content-between"><span>Shipping</span><span>@(price.ShippingCents == 0 ? "Free" : Pricing.Format(price.ShippingCents))</span></li>
+                <li class="list-group-item d-flex justify-content-between fw-bold"><span>Total (VAT incl.)</span><span>@Pricing.Format(price.TotalCents)</span></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

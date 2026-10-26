@@ -1,0 +1,31 @@
+@model Order
+@{
+    ViewData["Title"] = "Demo payment";
+}
+
+<div class="mx-auto" style="max-width: 32rem">
+    <div class="alert alert-warning small">
+        <strong>Demo payment page.</strong> This stands in for Stripe's payment page so you can try the shop without an account.
+        No card is needed and no money moves. With <code>Payments:Provider = Stripe</code> customers pay on Stripe instead.
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h1 class="h5">Pay for order @Model.Reference</h1>
+            <p class="display-6 mb-3">@Pricing.Format(Model.TotalCents, Model.Currency)</p>
+            <ul class="small text-muted ps-3">
+                @foreach (var item in Model.Items)
+                {
+                    <li>@item.Quantity × @item.ProductName</li>
+                }
+            </ul>
+
+            <form asp-action="Pay" asp-route-token="@Model.Token" method="post" class="mb-2">
+                <button type="submit" class="btn btn-brand btn-lg w-100">Pay @Pricing.Format(Model.TotalCents, Model.Currency) (simulated)</button>
+            </form>
+            <form asp-action="Cancel" asp-route-token="@Model.Token" method="post">
+                <button type="submit" class="btn btn-link w-100">Go back without paying</button>
+            </form>
+        </div>
+    </div>
+</div>

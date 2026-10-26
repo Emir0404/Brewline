@@ -1,0 +1,52 @@
+@model Product
+@{
+    ViewData["Title"] = Model.Name;
+    var maxQty = Math.Min(Model.Stock, Pricing.MaxQuantityPerLine);
+}
+
+<nav aria-label="breadcrumb" class="small mb-3">
+    <a asp-controller="Shop" asp-action="Index">Shop</a> /
+    <a asp-controller="Shop" asp-action="Index" asp-route-category="@Model.Category">@Model.Category</a> /
+    @Model.Name
+</nav>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <img src="/images/products/@(Model.Slug).svg" alt="@Model.Name" class="img-fluid rounded-4 border" />
+    </div>
+    <div class="col-md-6">
+        <p class="eyebrow">@Model.Category@(Model.Size is null ? "" : " · " + Model.Size)</p>
+        <h1 class="h2">@Model.Name</h1>
+        <p class="price fs-3 mb-3">@Pricing.Format(Model.PriceCents) <span class="small text-muted fw-normal">incl. VAT</span></p>
+        <p class="lead">@Model.Summary</p>
+        @if (!string.IsNullOrWhiteSpace(Model.Details))
+        {
+            <p class="text-muted">@Model.Details</p>
+        }
+
+        @if (Model.Stock == 0)
+        {
+            <div class="alert alert-secondary">Sold out for now.</div>
+        }
+        else
+        {
+            @if (Model.Stock <= 5)
+            {
+                <p class="text-warning-emphasis fw-medium">Only @Model.Stock left in stock.</p>
+            }
+            <form asp-controller="Cart" asp-action="Add" method="post" class="d-flex gap-2 align-items-end">
+                <input type="hidden" name="productId" value="@Model.Id" />
+                <div>
+                    <label for="quantity" class="form-label small mb-1">Quantity</label>
+                    <select id="quantity" name="quantity" class="form-select">
+                        @for (var i = 1; i <= maxQty; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-brand btn-lg flex-grow-1">Add to basket</button>
+            </form>
+        }
+    </div>
+</div>

@@ -1,0 +1,43 @@
+﻿@model IReadOnlyList<Product>
+@{
+    ViewData["Title"] = "Fresh roasted coffee";
+}
+
+<section class="hero">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <p class="eyebrow">Small batch roasters</p>
+            <h1 class="display-5 fw-bold">Coffee roasted this week, at your door in days.</h1>
+            <p class="lead text-muted">Single origins, an honest house blend and the gear to brew them well. Roasted in small batches and shipped fresh.</p>
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <a class="btn btn-brand btn-lg" asp-controller="Shop" asp-action="Index">Shop all coffee</a>
+                <a class="btn btn-outline-dark btn-lg" href="/shop?category=Equipment">Brewing gear</a>
+            </div>
+        </div>
+        <div class="col-lg-5 d-none d-lg-block">
+            @if (Model.Count > 0)
+            {
+                <img src="/images/products/@(Model[0].Slug).svg" alt="@Model[0].Name" class="hero-img" />
+            }
+        </div>
+    </div>
+</section>
+
+<section class="perks row text-center g-3 my-4">
+    <div class="col-md-4"><strong>Roasted to order</strong><div class="small text-muted">Every bag is roasted within a week of shipping.</div></div>
+    <div class="col-md-4"><strong>Free shipping from @Pricing.Format(Pricing.FreeShippingFromCents)</strong><div class="small text-muted">Flat @Pricing.Format(Pricing.FlatShippingCents) below that.</div></div>
+    <div class="col-md-4"><strong>Pay securely</strong><div class="small text-muted">Card payments handled by Stripe. We never see your card.</div></div>
+</section>
+
+<section class="mt-5">
+    <div class="d-flex justify-content-between align-items-end mb-3">
+        <h2 class="h4 mb-0">Popular right now</h2>
+        <a asp-controller="Shop" asp-action="Index">See everything</a>
+    </div>
+    <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-lg-4">
+        @foreach (var product in Model)
+        {
+            <div class="col"><partial name="_ProductCard" model="product" /></div>
+        }
+    </div>
+</section>

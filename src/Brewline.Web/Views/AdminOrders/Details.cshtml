@@ -1,0 +1,74 @@
+@model Order
+@{
+    ViewData["Title"] = $"Order {Model.Reference}";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Order @Model.Reference <span class="badge text-bg-secondary fs-6 align-middle">@Model.Status</span></h1>
+        <div class="text-muted small">
+            Placed @Model.CreatedAt.ToString("dd MMM yyyy HH:mm") UTC
+            @if (Model.PaidAt is { } paidAt) { <text> · paid @paidAt.ToString("dd MMM HH:mm")</text> }
+            @if (Model.ShippedAt is { } shippedAt) { <text> · shipped @shippedAt.ToString("dd MMM HH:mm")</text> }
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        @if (Model.Status == OrderStatus.Paid)
+        {
+            <form asp-action="Ship" asp-route-id="@Model.Id" method="post" data-confirm="Mark as shipped and email the customer?">
+                <button class="btn btn-brand" type="submit">Mark as shipped</button>
+            </form>
+        }
+        <a class="btn btn-outline-dark" asp-action="Index">Back to orders</a>
+    </div>
+</div>
+
+@if (Model.Status == OrderStatus.NeedsReview)
+{
+    <div class="alert alert-danger">
+        This order was paid after it had been cancelled and the stock was no longer available.
+        Refund the payment in your Stripe dashboard or restock the items and contact the customer.
+    </div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <table class="table mb-0">
+                <thead><tr><th>Item</th><th class="text-end">Qty</th><th class="text-end">Price</th><th class="text-end">Total</th></tr></thead>
+                <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@item.ProductName</td>
+                        <td class="text-end">@item.Quantity</td>
+                        <td class="text-end">@Pricing.Format(item.UnitPriceCents, Model.Currency)</td>
+                        <td class="text-end">@Pricing.Format(item.LineTotalCents, Model.Currency)</td>
+                    </tr>
+                }
+                </tbody>
+                <tfoot>
+                    <tr><td colspan="3" class="text-end">Shipping</td><td class="text-end">@Pricing.Format(Model.ShippingCents, Model.Currency)</td></tr>
+                    <tr class="fw-bold"><td colspan="3" class="text-end">Total</td><td class="text-end">@Pricing.Format(Model.TotalCents, Model.Currency)</td></tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card mb-3"><div class="card-body">
+            <h2 class="h6">Customer</h2>
+            <address class="mb-0">
+                @Model.CustomerName<br />
+                <a href="mailto:@Model.Email">@Model.Email</a><br />
+                @Model.AddressLine<br />
+                @Model.PostalCode @Model.City<br />
+                @Model.Country
+            </address>
+            @if (!string.IsNullOrWhiteSpace(Model.Note))
+            {
+                <hr /><div class="small"><strong>Note:</strong> @Model.Note</div>
+            }
+        </div></div>
+        <div class="small text-muted">Payment session: <code>@(Model.PaymentSessionId ?? "none")</code></div>
+    </div>
+</div>

@@ -1,0 +1,67 @@
+@model ProductForm
+@{
+    var editing = ViewBag.ProductId is int;
+    ViewData["Title"] = editing ? "Edit product" : "Add product";
+}
+
+<h1 class="h3 mb-4">@ViewData["Title"]</h1>
+
+<div class="card" style="max-width: 46rem">
+    <div class="card-body">
+        <form method="post" asp-action="@(editing ? "Edit" : "Create")" asp-route-id="@(editing ? ViewBag.ProductId : null)">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Category" class="form-label"></label>
+                    <input asp-for="Category" class="form-control" list="categories" />
+                    <datalist id="categories"><option value="Coffee"></option><option value="Equipment"></option></datalist>
+                    <span asp-validation-for="Category" class="text-danger small"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="Summary" class="form-label"></label>
+                    <input asp-for="Summary" class="form-control" />
+                    <span asp-validation-for="Summary" class="text-danger small"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="Details" class="form-label"></label>
+                    <textarea asp-for="Details" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Details" class="text-danger small"></span>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label asp-for="Price" class="form-label"></label>
+                    <input asp-for="Price" type="number" step="0.01" min="0.5" class="form-control" />
+                    <span asp-validation-for="Price" class="text-danger small"></span>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label asp-for="Stock" class="form-label"></label>
+                    <input asp-for="Stock" type="number" min="0" class="form-control" />
+                    <span asp-validation-for="Stock" class="text-danger small"></span>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label asp-for="Size" class="form-label"></label>
+                    <input asp-for="Size" class="form-control" placeholder="250 g" />
+                </div>
+                <div class="col-6 col-md-3">
+                    <label asp-for="Accent" class="form-label"></label>
+                    <input asp-for="Accent" type="color" class="form-control form-control-color w-100" />
+                    <span asp-validation-for="Accent" class="text-danger small"></span>
+                </div>
+                <div class="col-12 form-check ms-1">
+                    <input asp-for="IsActive" class="form-check-input" />
+                    <label asp-for="IsActive" class="form-check-label"></label>
+                </div>
+            </div>
+            <div class="mt-4">
+                <button class="btn btn-brand" type="submit">Save</button>
+                <a class="btn btn-link" asp-action="Index">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

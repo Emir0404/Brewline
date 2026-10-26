@@ -1,0 +1,90 @@
+@model Order
+@{
+    var confirming = (bool)ViewBag.Confirming;
+    var waiting = Model.Status == OrderStatus.Pending && confirming;
+    ViewData["Title"] = $"Order {Model.Reference}";
+    var (badge, label) = Model.Status switch
+    {
+        OrderStatus.Pending => ("warning", "Waiting for payment"),
+        OrderStatus.Paid => ("success", "Paid"),
+        OrderStatus.Shipped => ("primary", "Shipped"),
+        OrderStatus.Cancelled => ("secondary", "Cancelled"),
+        _ => ("danger", "Being reviewed"),
+    };
+}
+
+@if (waiting)
+{
+    @* The payment provider tells us about the payment a moment after the customer returns. Check again shortly. *@
+    <meta http-equiv="refresh" content="3" />
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Order @Model.Reference <span class="badge text-bg-@badge fs-6 align-middle">@label</span></h1>
+        <div class="text-muted small">Placed @Model.CreatedAt.ToString("dd MMM yyyy HH:mm") UTC</div>
+    </div>
+</div>
+
+@if (waiting)
+{
+    <div class="alert alert-info">Thank you! We are confirming your payment. This page updates by itself, it usually takes a few seconds.</div>
+}
+else if (Model.Status == OrderStatus.Paid)
+{
+    <div class="alert alert-success">Payment received, thank you! A confirmation was sent to <strong>@Model.Email</strong>.</div>
+}
+else if (Model.Status == OrderStatus.Shipped)
+{
+    <div class="alert alert-primary">Your order is on its way to @Model.City.</div>
+}
+else if (Model.Status == OrderStatus.NeedsReview)
+{
+    <div class="alert alert-warning">We received your payment but ran into a problem with the stock. We will contact you at <strong>@Model.Email</strong> shortly.</div>
+}
+else if (Model.Status == OrderStatus.Pending)
+{
+    <div class="alert alert-warning">
+        <p class="mb-2">Your payment is not finished yet. Your items are reserved for a short time.</p>
+        <div class="d-flex gap-2">
+            <form asp-action="Retry" asp-route-token="@Model.Token" method="post"><button class="btn btn-brand" type="submit">Pay now</button></form>
+            <form asp-action="Cancel" asp-route-token="@Model.Token" method="post" data-confirm="Cancel this order?"><button class="btn btn-outline-secondary" type="submit">Cancel order</button></form>
+        </div>
+    </div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <table class="table mb-0 align-middle">
+                <thead><tr><th>Item</th><th class="text-end">Qty</th><th class="text-end">Price</th><th class="text-end">Total</th></tr></thead>
+                <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@item.ProductName</td>
+                        <td class="text-end">@item.Quantity</td>
+                        <td class="text-end">@Pricing.Format(item.UnitPriceCents, Model.Currency)</td>
+                        <td class="text-end">@Pricing.Format(item.LineTotalCents, Model.Currency)</td>
+                    </tr>
+                }
+                </tbody>
+                <tfoot>
+                    <tr><td colspan="3" class="text-end">Shipping</td><td class="text-end">@(Model.ShippingCents == 0 ? "Free" : Pricing.Format(Model.ShippingCents, Model.Currency))</td></tr>
+                    <tr class="fw-bold"><td colspan="3" class="text-end">Total (VAT incl.)</td><td class="text-end">@Pricing.Format(Model.TotalCents, Model.Currency)</td></tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card"><div class="card-body">
+            <h2 class="h6">Delivery to</h2>
+            <address class="mb-0">
+                @Model.CustomerName<br />
+                @Model.AddressLine<br />
+                @Model.PostalCode @Model.City<br />
+                @Model.Country
+            </address>
+        </div></div>
+    </div>
+</div>
