@@ -6,7 +6,17 @@ A complete **online shop with card payments** (Stripe Checkout), built with ASP.
 Browse a catalogue, fill a basket, check out as a guest, pay, get a confirmation email, and manage products and
 orders in an admin area. The shop sells (made-up) coffee and brewing gear.
 
-![Home](docs/home.png)
+## Screenshots
+
+Home, product, basket, checkout, the demo payment page, a paid order, the admin order list, and the basket on a phone.
+
+<img src="docs/screenshots/01-home.png" alt="Home page" width="49%"> <img src="docs/screenshots/03-product.png" alt="Product page" width="49%">
+
+<img src="docs/screenshots/04-basket.png" alt="Basket" width="49%"> <img src="docs/screenshots/05-checkout.png" alt="Checkout" width="49%">
+
+<img src="docs/screenshots/07-demo-payment.png" alt="Demo payment page" width="49%"> <img src="docs/screenshots/08-order-paid.png" alt="Order confirmed" width="49%">
+
+<img src="docs/screenshots/06-admin-orders.png" alt="Admin: orders" width="49%"> <img src="docs/screenshots/mobile-04-basket.png" alt="Basket on a phone" width="24%">
 
 ## Features
 
@@ -22,10 +32,6 @@ orders in an admin area. The shop sells (made-up) coffee and brewing gear.
 - Orders with status filters, details, "mark as shipped" (emails the customer)
 - Products: add, edit, hide, price and stock
 - Login protected against brute force; switched off completely unless credentials are configured
-
-| Basket | Order paid |
-|---|---|
-| ![Basket](docs/basket.png) | ![Order](docs/order-paid.png) |
 
 ## Payments: how it works (and how to try it)
 
@@ -105,7 +111,7 @@ The app creates its SQLite database and a demo catalogue on first start. In `Dev
 disabled until you set `Admin__Username` and `Admin__Password`.
 
 ```bash
-dotnet test        # 150 tests
+dotnet test        # 153 tests
 ```
 
 ### Docker
@@ -119,7 +125,7 @@ docker run -p 8080:8080 -v brewline-data:/data \
 Open <http://localhost:8080>. Behind a reverse proxy, set `ASPNETCORE_FORWARDEDHEADERS_ENABLED=true` so the
 return addresses sent to Stripe use your public host name and https.
 
-## Tests (150)
+## Tests (153)
 
 Domain rules (pricing, order states), basket, checkout and stock reservation on a real SQLite schema,
 order and payment confirmation, Stripe session building, **webhook signature handling with genuinely signed
